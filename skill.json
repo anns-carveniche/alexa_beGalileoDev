@@ -1,0 +1,69 @@
+{
+  "manifest": {
+    "manifestVersion": "1.0",
+    "permissions": [
+      {
+        "name": "alexa::profile:name:read"
+      },
+      {
+        "name": "alexa::profile:email:read"
+      }
+    ],
+    "privacyAndCompliance": {
+      "locales": 
+      {
+        "en-IN": {
+          "privacyPolicyUrl": "https://www.begalileo.com/user/privacy_policy",
+          "termsOfUseUrl": "https://www.begalileo.com/user/privacy_policy"
+        }
+      },
+      "allowsPurchases": false,
+      "usesPersonalInfo": true,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "containsAds": false
+    },
+    "publishingInformation": {
+      "locales": {
+        "en-IN": {
+          "summary": "beGalileo the path way to math learning",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/5240/6bf922a913884bb78dfa62232cd92f73/APP_ICON?versionId=QUMG2n60Af_CfpJ0kzaOGUUqxo50Wq_i&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20191025T093947Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAJFEYRBGIHK2BBYKA%2F20191025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=ee185758d56c87d96d3510274537db8703c20dbc42d130d2feac8c2ab08063e4",
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/f639/96c18b0851534a69941f7bd05c9df5ac/APP_ICON_LARGE?versionId=EWFstL5drTp1xGgbnyvIkntcpshBeISp&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20191025T093947Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAJFEYRBGIHK2BBYKA%2F20191025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=31c785652508234a8671fa94f436f08a02f230cb62d7c0f2c45fb9b1a714c282",
+          "examplePhrases": [
+            "Alexa open beGalileo",
+            "can i revise my classes",
+            "my kid status"
+          ],
+          "name": "beGalileoDev",
+          "description": "It covers all major school curricula including CBSE, ICSE, IB & IGCSE for students across the age group of 5 to 14 years.",
+          "keywords": [
+            "Education",
+            "Learning",
+            "Skill",
+            "Math",
+            "Skill",
+            "Math",
+            "Quiz"
+          ]
+        }
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Test with keywords \"Revise my class\",\" my kid status\"",
+      "category": "KNOWLEDGE_AND_TRIVIA",
+      "distributionCountries": []
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "https://7b2b170b.ngrok.io",
+          "sslCertificateType": "Wildcard"
+        },
+        "interfaces": [
+          {
+            "type": "VIDEO_APP"
+          }
+        ]
+      }
+    }
+  }
+}

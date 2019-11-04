@@ -1,0 +1,267 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "be galileo check",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": [
+                        "stop game",
+                        "end game",
+                        "quit",
+                        "stop"
+                    ]
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.YesIntent",
+                    "samples": [
+                        "yes",
+                        "okay",
+                        "ok"        
+                    ]
+                },
+                {
+                    "name": "AMAZON.NoIntent",
+                    "samples": [
+                        "no"
+                    ]
+                },
+               
+                {
+                    "name": "QuizIntent",
+                    "slots": [],
+                    "samples": [
+                        "start",
+                        "hit me",
+                        "let's go"
+                    ]
+                },
+                {
+                    "name": "ReviseClassIntent",
+                    "slots": [],
+                    "samples": [
+                        "I need to revise my classes",
+                        "revise my class"
+                    ]
+                },
+               
+                {
+                    "name": "ChooseClassIntent",
+                    "slots": [
+                            {
+                                "name": "lessonOption",
+                                "type": "LessonOption",
+                                "samples": [
+                                    "{lessonOption}"
+                                ]
+                            }
+                        ],
+                    "samples": [
+                        "the lesson is {lessonOption}",
+                        "{lessonOption}"
+                    ]
+                },
+                {
+                    "name": "ChooseOptionIntent",
+                    "slots": [
+                        {
+                            "name": "chooseOption",
+                            "type": "ChooseOptionSlotType"
+                        }
+                    ],
+                    "samples": [
+                        "{chooseOption}"
+                    ]
+                },
+               
+                {
+                    "name": "AMAZON.StartOverIntent",
+                    "samples": [
+                        "start over",
+                        "play again"
+                    ]
+                },
+                {
+                    "name": "AnswerIntent",
+                    "slots": [
+                        {
+                            "name": "answer",
+                            "type": "OptionSlotType"
+                        }
+                    ],
+                    "samples": [
+                        "{answer}",
+                        "Option {answer}",
+                        "it's {answer}"
+                    ]
+                },
+                {
+                    "name": "GetKidInfoIntent",
+                    "slots": [
+                        
+                    ],
+                    "samples": [
+                        "What is my kid status",
+                        "what's my kid status",
+                        "tell me about my kid's activity",
+                        "my kid status"
+                       
+                    ]
+                },
+                {
+                    "name": "ReadNotificationIntent",
+                    "slots": [],
+                    "samples": [
+                        "read my notifications"
+                    ]    
+                },
+                {
+                    "name": "AMAZON.MoreIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateSettingsIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NextIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PageUpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PageDownIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PreviousIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollRightIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollDownIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollLeftIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollUpIntent",
+                    "samples": []
+                }
+            ],
+            "types": [
+                {
+                    "name": "OptionSlotType",
+                    "values": [
+                       {
+                            "id": 0,
+                            "name": {
+                                "value": "a"
+                            }
+                        },
+                        {
+                            "id": 1,
+                            "name": {
+                                "value": "b"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "ChooseOptionSlotType",
+                    "values": [
+                        {
+                            "id":0,
+                            "name": {
+                            
+                                "value": "play a quiz"
+                            }
+                        },
+                        {
+                            "id": 1,
+                            "name": {
+                                "value": "play a video"
+                            }
+                        },
+                        {
+                            "id": 2,
+                            "name": {
+                                "value": "Revise a topic"
+                            }
+                        },
+                        {
+                            "id": 3,
+                            "name": {
+                                "value": "Challenge a Quiz",
+                                 "synonyms": [
+                                    "Send a quiz question",
+                                    "send a quiz"  
+                                ]
+                            }
+                        },
+                        {
+                            "id": 4,
+                            "name": {
+                                "value": "send a HI-FI",
+                                "synonyms": [
+                                    "Send hifi"
+                                ]
+                            }
+                        }
+
+                    ]
+                },
+                {
+                    "name": "LessonOption",
+                    "values": [
+                        {
+                            "id": "0",
+                            "name": {
+                                "value": "zero"
+                            }
+                        }
+                    ]
+                }
+                
+            ]
+            
+        },
+        "dialog" : {
+            "intents": [
+                {
+                    "name": "ChooseClassIntent",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                            {
+                                "name": "lessonOption",
+                                "type": "LessonOption",
+                                "confirmationRequired": false,
+                                "elicitationRequired": false      
+                            }
+                    ]
+                }
+            ]
+        }
+    }
+}
+    
