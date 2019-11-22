@@ -3,7 +3,7 @@ const {
   ReadStudentNotification,
   ReadParentNotification
 } = require("../Utils/NotificationUtilMethods");
-
+const { openMainMenu } = require("../Utils/CommonUtilMethods");
 const ReadNotificationIntentHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
@@ -14,11 +14,20 @@ const ReadNotificationIntentHandler = {
   },
   handle(handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-    if (sessionAttributes.IS_STUDENT) {
-        return ReadStudentNotification(handlerInput);
-    } else {
-        return ReadParentNotification(handlerInput);
+    console.log("Session Attributes");
+    console.log(sessionAttributes.IS_STUDENT);
+    if (typeof sessionAttributes.IS_STUDENT !== "undefined") {
+        if (sessionAttributes.IS_STUDENT) {
+          return ReadStudentNotification(handlerInput);
+        } else {
+          return ReadParentNotification(handlerInput);
+        }
     }
+    else
+    {
+          return openMainMenu(handlerInput);
+    }
+  
   }
 };
 

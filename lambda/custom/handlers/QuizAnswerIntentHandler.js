@@ -1,10 +1,13 @@
-const { states, speechConsCorrect, speechConsWrong } = require("../Constants");
+const { states,sub_states ,speechConsCorrect, speechConsWrong } = require("../Constants");
+
+const Constants = require("../Constants");
 const {
   quizResultVoiceExpression,
   studentQuizChallengeValuate,
   toMainMenu,
   getHelpMessage
-} = require("../Utils/UtilMethods");
+} = require("../Utils/CommonUtilMethods");
+const { valuateQuizCricketAnswer } = require("../Utils/QuizCricketGameMethods");
 
 
 const QuizAnswerIntentHandler = {
@@ -12,9 +15,14 @@ const QuizAnswerIntentHandler = {
     const attributes = handlerInput.attributesManager.getSessionAttributes();
     const request = handlerInput.requestEnvelope.request;
     return (
-     // attributes.state === states.QUIZ &&
+      // attributes.state === states.QUIZ &&
+      
       request.type === "IntentRequest" &&
-      request.intent.name === "AnswerIntent"
+      request.intent.name === "AnswerIntent" &&
+      (attributes.state === states.QUIZ ||
+        attributes.state === states.CHALLENGE_QUIZ ||
+        (attributes.state === states.GAME_QUIZ_CRICKET && attributes.sub_state === sub_states.GAME_RESUME)
+      )
     );
   },
   handle(handlerInput) {
@@ -40,7 +48,11 @@ const QuizAnswerIntentHandler = {
    
     
       console.log("userAnswer : "+userAnswer+" Option Id "+optionId);
-     
+      if(sessionAttributes.state === states.GAME_QUIZ_CRICKET)
+      {
+          return valuateQuizCricketAnswer(handlerInput,userAnswer);
+      }
+
       if(sessionAttributes.state===states.CHALLENGE_QUIZ)
       {
         return studentQuizChallengeValuate(handlerInput,userAnswer);
@@ -56,6 +68,7 @@ const QuizAnswerIntentHandler = {
           var cardHeader = "Quiz";
           speechText += getNextQuestion(handlerInput);
           var cardText = getCardText(handlerInput);
+          sessionAttributes.repeat_message = speechText;
           return response
             .speak(speechText)
             .withShouldEndSession(false)
@@ -73,6 +86,7 @@ const QuizAnswerIntentHandler = {
             sessionAttributes.state = states.VIDEO;
             cardText +=
               "Your score is too low.\r\n Do you want to revise the lesson ? ";
+             
           } else {
             speechText +=
               ' <break time="0.5s" /> Thats all for now . ' +
@@ -81,6 +95,8 @@ const QuizAnswerIntentHandler = {
             cardText +=
               "Well done. \r\n Do you want to share the score with your parent ? ";
           }
+           sessionAttributes.help_message = Constants.yes_or_no_help_message;
+           sessionAttributes.repeat_message = speechText;
           return response
             .speak(speechText)
             .withShouldEndSession(false)
@@ -89,8 +105,11 @@ const QuizAnswerIntentHandler = {
             .getResponse();
         }
       }
+      
       else
       {
+        var repeatMessage = sessionAttributes.repeat_message;
+        console.log(repeatMessage);
         return toMainMenu(handlerInput);
       }
       

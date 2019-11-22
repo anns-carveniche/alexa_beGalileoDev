@@ -1,14 +1,6 @@
 {
   "manifest": {
     "manifestVersion": "1.0",
-    "permissions": [
-      {
-        "name": "alexa::profile:name:read"
-      },
-      {
-        "name": "alexa::profile:email:read"
-      }
-    ],
     "privacyAndCompliance": {
       "locales": 
       {
@@ -55,7 +47,7 @@
     "apis": {
       "custom": {
         "endpoint": {
-          "uri": "https://7b2b170b.ngrok.io",
+          "uri": "https://c7cb328e.ngrok.io",
           "sslCertificateType": "Wildcard"
         },
         "interfaces": [

@@ -1,16 +1,17 @@
-const { states } = require("../Constants");
+const { states,conclude_message } = require("../Constants");
 const { playVideo } = require("./ChooseOptionMethods");
 const {
   studentQuizChallenge,
   stripTags,
   toMainMenu
-} = require("../Utils/UtilMethods");
+} = require("../Utils/CommonUtilMethods");
 const { shareQuizToParents } = require("../Utils/HttpUtils");
 var mHandlerInput;
  var cardContent = "";
  var cardHeader = "beGalileo";
 var sessionAttributes;
  var speakOutput = " ";
+ const { openQuizCricketGame } = require("../Utils/QuizCricketGameMethods");
 
 
 
@@ -60,10 +61,23 @@ const YesIntentHandler = {
         );
         console.log(dataResponse);
         speakOutput += "Score shared with your parent";
+        speakOutput += " "+conclude_message;
+        sessionAttributes.state = states.CONCLUDE;
       }
+      else if(state === states.CONCLUDE)
+      {
+        return toMainMenu(handlerInput);
+      }
+
+      else if(state === states.GAME_QUIZ_CRICKET)
+      {
+        return openQuizCricketGame(handlerInput);
+      }
+
       else {
         speakOutput += "Sorry Iam not sure about that";
       }
+      sessionAttributes.repeat_message = speakOutput;
       return mHandlerInput.responseBuilder
         .speak(speakOutput)
         .withShouldEndSession(false)

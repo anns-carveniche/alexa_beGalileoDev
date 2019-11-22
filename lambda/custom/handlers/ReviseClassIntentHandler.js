@@ -2,12 +2,9 @@ const { states } = require("../Constants");
 const https = require("https");
 const Constants = require("../Constants");
 const config = require("../config");
-const { getEmail } = require("../Utils/UtilMethods");
+const { getEmail } = require("../Utils/CommonUtilMethods");
 const { getUserInfo } = require("../Utils/HttpUtils");
-const {
-  isNotificationAvailable,
-  NotificationAlert
-} = require("../Utils/NotificationUtilMethods");
+
 
 const ReviseClassIntentHandler = {
   canHandle(handlerInput) {
@@ -19,8 +16,9 @@ const ReviseClassIntentHandler = {
   },
 async handle(handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-    const email = await getEmail(handlerInput);
-    const dataResponse = await getUserInfo(email);
+    const accessToken =
+      handlerInput.requestEnvelope.context.System.user.accessToken;
+    const dataResponse = await getUserInfo(accessToken);
     let speakText = "";
     let cardText = "";
 
@@ -40,43 +38,10 @@ async handle(handlerInput) {
         .getResponse();
     else 
     {
-         
          sessionAttributes.student_id = dataResponse.student_data[0].student_id;
          var conceptPracticed = dataResponse.student_data[0].concept_practiced;
          speakText = getConcepts(conceptPracticed);
          
-        // let replaceEntityDirective = {
-        //   type: "Dialog.UpdateDynamicEntities",
-        //   updateBehavior: "REPLACE",
-        //   types: [
-        //     {
-        //       name: "LessonOption",
-        //       values: [
-        //         {
-        //           id: "5411",
-        //           name: {
-        //             value: "Simple number operations",
-        //             synonyms: ["first one", "option one"]
-        //           }
-        //         },
-        //         {
-        //           id: "5433",
-        //           name: {
-        //             value: "Even and Odd Numbers",
-        //             synonyms: ["second one", "option two"]
-        //           }
-        //         },
-        //         {
-        //           id: "5451",
-        //           name: {
-        //             value: "Rounding numbers to nearest 100 and 1000",
-        //             synonyms: ["third one", "option two"]
-        //           }
-        //         }
-        //       ]
-        //     }
-        //   ]
-        // };
         let checkEntityDirective = {
           type: "Dialog.UpdateDynamicEntities",
           updateBehavior: "REPLACE",
@@ -103,15 +68,16 @@ async handle(handlerInput) {
          
             
         console.log(checkEntityDirective.types[0].values);
-
+        sessionAttributes.help_message = Constants.topic_name_help_message;
+          sessionAttributes.repeat_message = speakText;
         return handlerInput.responseBuilder
           .speak(speakText)
-          .reprompt("You can say any of the topic name")
+          .reprompt(
+            Constants.topic_name_help_message
+          )
           .addDirective(checkEntityDirective)
           .withShouldEndSession(false)
-          .withSimpleCard("Recent Topics",
-          cardText
-          )
+          .withSimpleCard("Recent Topics", cardText)
           .getResponse();
     }
    

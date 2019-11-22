@@ -24,7 +24,7 @@ const ChooseOptionIntentHandler = {
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
         var studentId = sessionAttributes.student_id;
         var subConceptId = sessionAttributes.sub_concept_id;
-        var speechOutput = " " + studentId + " " + subConceptId;
+      //  var speechOutput = " " + studentId + " " + subConceptId;
         if (optionId == 0) return QuizStartIntentHandler.handle(handlerInput);
         if (optionId == 1) return playVideo(handlerInput); 
         if (optionId == 2) return highlights(handlerInput); 

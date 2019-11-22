@@ -1,12 +1,12 @@
 const axios = require("axios");
 const config = require("../config");
-
-async function getUserInfo(email)
+async function getUserInfo(accessToken)
 {
-    email = "meena.palanirajan@gmail.com";    
     var path =
-      config.BASE_URL+"new_device_users/get_parent_info?email=" +
-      email;
+      config.BASE_URL +
+      "new_device_users/get_parent_info?access_token=" +
+      accessToken;
+    console.log(path);  
    let dataResponse = await axios.get(path);
    console.log("Respppp : " + dataResponse);
    return dataResponse.data;

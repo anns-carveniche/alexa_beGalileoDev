@@ -11,9 +11,11 @@ const GetKidInfoIntentHandler = require("./handlers/GetKidInfoIntentHandler");
 const ReviseClassIntentHandler = require("./handlers/ReviseClassIntentHandler");
 const ChooseOptionIntentHandler = require("./handlers/ChooseOptionIntentHandler");
 const ReadNotificationIntentHandler = require("./handlers/ReadNotificationIntentHandler");
+const { PlayGameIntentHandler,GameMenuIntentHandler,NumbersIntentHandler } = require("./handlers/PlayGameIntentHandler");
+
 const Constants = require("./Constants");
 const states = Constants.states;
-const { getEmail,sendNotification } = require("./Utils/UtilMethods");
+const { openMainMenu, stripTags } = require("./Utils/CommonUtilMethods");
 const { getUserInfo } = require("./Utils/HttpUtils");
 
 
@@ -23,43 +25,9 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
    async handle(handlerInput) {
+
+    return openMainMenu(handlerInput);
         
-        const email = await getEmail(handlerInput);
-        const dataResponse = await getUserInfo(email);
-        const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-        if(!dataResponse.status)
-        {
-            return handlerInput.responseBuilder
-              .speak(Constants.email_not_registered)
-              .getResponse();
-        }
-        if(dataResponse.student_data.length < 1)
-        {
-          var speechText = Constants.no_student_registered +email + ' account';
-          return handlerInput.responseBuilder
-            .speak(speechText)
-            .withSimpleCard("beGalileo", speechText)
-            .getResponse();
-        }
-        var studentName =
-          dataResponse.student_data[0].first_name +
-          " " +
-          dataResponse.student_data[0].last_name;
-  
-        var speechText =
-          "Hello! welcome to be galileo <break time='200ms'/>  Are you " +
-          studentName+"?";
-        var cardText = "Hello! welcome to beGalileo Are you " + studentName;
-        sessionAttributes.state = states.IS_STUDENT;
-        sessionAttributes.studentName = studentName;
-        sessionAttributes.dataResponse = dataResponse;
-        sessionAttributes.parent_id = dataResponse.parent_data[0].id;
-        return handlerInput.responseBuilder
-          .speak(speechText)
-          .withSimpleCard("beGalileo",cardText)
-          .withShouldEndSession(false)
-          .reprompt(Constants.helpMessage)
-          .getResponse();
     }
 };
 
@@ -92,6 +60,10 @@ const ChooseClassIntentHandler = {
                   "You Choose " +
                   lessonName +
                   ". Do you want to play a quiz or play a video or revise a topic ";
+
+           sessionAttributes.help_message =
+             "you can say <break time='200ms'/>play a quiz <break time='100ms'/>or <break time='100ms'/> play a video <break time='100ms'/> or <break time='100ms'/> revise a topic";   
+             sessionAttributes.repeat_message = speechOutput;     
                 return handlerInput.responseBuilder
                   .speak(speechOutput)
                   .withShouldEndSession(false)
@@ -109,14 +81,47 @@ const HelpIntentHandler = {
     );
   },
   handle(handlerInput) {
-    const speakOutput = Constants.helpMessage;
-
+    var speakOutput = "";
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    if (typeof sessionAttributes.help_message !== "undefined") {
+      speakOutput += sessionAttributes.help_message;
+    }
+    else
+    {
+      return openMainMenu(handlerInput);
+    }
     return handlerInput.responseBuilder
+      .withShouldEndSession(false)
       .speak(speakOutput)
       .reprompt(speakOutput)
       .getResponse();
   }
 };
+
+const RepeatIntentHandler = {
+  canHandle(handlerInput) {
+    return (
+      Alexa.getRequestType(handlerInput.requestEnvelope) === "IntentRequest" &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) ===
+        "AMAZON.RepeatIntent"
+    );
+  },
+  handle(handlerInput) {
+    var speakOutput = "";
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    if (typeof sessionAttributes.repeat_message !== "undefined") {
+      speakOutput += sessionAttributes.repeat_message;
+    } else {
+      return openMainMenu(handlerInput);
+    }
+    return handlerInput.responseBuilder
+      .withShouldEndSession(false)
+      .speak(speakOutput)
+      .reprompt(speakOutput)
+      .getResponse();
+  }
+};
+
 
 
 
@@ -127,7 +132,7 @@ const CancelAndStopIntentHandler = {
                 || Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent');
     },
     handle(handlerInput) {
-        const speakOutput = 'Goodbye!';
+        const speakOutput = Constants.exit_message;
         return handlerInput.responseBuilder
             .speak(speakOutput)
             .getResponse();
@@ -152,12 +157,27 @@ const IntentReflectorHandler = {
     },
     handle(handlerInput) {
         const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
+        const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
         const speakOutput = `You just triggered ${intentName}`;
-
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
-            .getResponse();
+        var repeatMessage = sessionAttributes.repeat_message;
+        var helpMessage = sessionAttributes.help_message;
+        if (typeof helpMessage !== "undefined") {
+             return handlerInput.responseBuilder
+               .withShouldEndSession(false)
+               .speak(helpMessage)
+               .reprompt(helpMessage)
+               .getResponse();
+        }
+        else if (typeof repeatMessage !== "undefined") {
+             return handlerInput.responseBuilder
+               .withShouldEndSession(false)
+               .speak(repeatMessage)
+               .reprompt(repeatMessage)
+               .getResponse();
+        } else {
+          return openMainMenu(handlerInput);
+        }
+         
     }
 };
 
@@ -168,12 +188,12 @@ const ErrorHandler = {
     },
     handle(handlerInput, error) {
         console.log(`~~~~ Error handled: ${error.stack}`);
-        const speakOutput = `Sorry, I had trouble doing what you asked. Please try again.`;
+        const errorOutput = `Sorry, I had trouble doing what you asked. Please try again.`;
 
         return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(speakOutput)
-            .getResponse();
+          .speak(errorOutput)
+          .reprompt(errorOutput)
+          .getResponse();
     }
 };
 
@@ -191,7 +211,11 @@ exports.handler = Alexa.SkillBuilders.custom()
     ChooseOptionIntentHandler,
     SessionEndedRequestHandler,
     NoIntentHandler,
+    RepeatIntentHandler,
     ReadNotificationIntentHandler,
+    PlayGameIntentHandler,
+    GameMenuIntentHandler,
+    NumbersIntentHandler,
     IntentReflectorHandler // make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
   )
   .addErrorHandlers(ErrorHandler)

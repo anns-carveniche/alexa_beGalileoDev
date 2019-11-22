@@ -1,6 +1,6 @@
-const { states } = require("../Constants");
+const { states,exit_message,conclude_message } = require("../Constants");
 const ReviseClassIntentHandler = require("./ReviseClassIntentHandler");
-const { stripTags, toMainMenu } = require("../Utils/UtilMethods");
+const { stripTags, toMainMenu } = require("../Utils/CommonUtilMethods");
 const NoIntentHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
@@ -13,6 +13,7 @@ const NoIntentHandler = {
      var cardContent = "";
      var cardHeader = "beGalileo";
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    console.log(sessionAttributes.state);
     var speakOutput = " ";
     if (sessionAttributes.state === states.NOTIFICATION) {
           const updatedIntent = sessionAttributes.callBackIntent;
@@ -21,18 +22,49 @@ const NoIntentHandler = {
             return ReviseClassIntentHandler.handle(handlerInput);
           else
            {
-              speakOutput += "ok"
+              speakOutput += "ok ";
+                speakOutput += conclude_message;
+                sessionAttributes.state = states.CONCLUDE;
+                return handlerInput.responseBuilder
+                  .speak(speakOutput)
+                  .getResponse();
            } 
     } 
-    else if(sessionAttributes.state === states.IS_STUDENT || states.CHALLENGE_QUIZ)
-    {
-      
-      sessionAttributes.IS_STUDENT = false;
-      return toMainMenu(handlerInput);
-    } 
-    else {
-      speakOutput += "Sorry Iam not sure about that";
-    }
+    else if (
+           sessionAttributes.state === states.IS_STUDENT ||
+           sessionAttributes.state === states.CHALLENGE_QUIZ
+         ) {
+           sessionAttributes.IS_STUDENT = false;
+           return toMainMenu(handlerInput);
+          // speakOutput = conclude_message;
+          // sessionAttributes.state = states.CONCLUDE;
+          //  return handlerInput.responseBuilder
+          //    .withShouldEndSession(false)
+          //    .speak(speakOutput)
+          //    .getResponse();
+         } else if (sessionAttributes.state === states.CONCLUDE) {
+           speakOutput = exit_message;
+         } 
+         else if(sessionAttributes.state === states.SHARE_SCORE)
+         {
+           speakOutput = "Okay "+conclude_message;
+           sessionAttributes.state = states.CONCLUDE;
+           sessionAttributes.repeat_message = speakOutput;
+           return handlerInput.responseBuilder
+             .withShouldEndSession(false)
+             .speak(speakOutput)
+             .getResponse();
+         }
+         else {
+           speakOutput = "Okay " + conclude_message;
+           sessionAttributes.state = states.CONCLUDE;
+           sessionAttributes.repeat_message = speakOutput;
+           return handlerInput.responseBuilder
+             .withShouldEndSession(false)
+             .speak(speakOutput)
+             .getResponse();
+         }
+         sessionAttributes.repeat_message = speakOutput;
     return handlerInput.responseBuilder.speak(speakOutput).getResponse();
   }
 };

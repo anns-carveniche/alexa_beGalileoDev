@@ -38,7 +38,19 @@
                         "no"
                     ]
                 },
-               
+                {
+                    "name": "NumbersIntent",
+                    "slots": [
+                        {
+                            "name": "myValue",
+                            "type": "AMAZON.NUMBER"
+                        }
+                    ],
+                    "samples": [
+                        "{myValue}",
+                        "Number {myValue}"
+                    ]
+                },
                 {
                     "name": "QuizIntent",
                     "slots": [],
@@ -85,7 +97,18 @@
                         "{chooseOption}"
                     ]
                 },
-               
+                {
+                    "name": "GameMenuIntent",
+                    "slots": [
+                        {
+                            "name": "gameMenuOption",
+                            "type": "GameOptionSlotType"
+                        }
+                    ],
+                    "samples": [
+                        "{gameMenuOption}"
+                    ]       
+                },
                 {
                     "name": "AMAZON.StartOverIntent",
                     "samples": [
@@ -128,6 +151,14 @@
                     ]    
                 },
                 {
+                    "name": "PlayGameIntent",
+                    "slots": [],
+                    "samples": [
+                        "play game",
+                        "play a game"
+                    ]
+                },
+                {
                     "name": "AMAZON.MoreIntent",
                     "samples": []
                 },
@@ -137,6 +168,10 @@
                 },
                 {
                     "name": "AMAZON.NextIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.RepeatIntent",
                     "samples": []
                 },
                 {
@@ -182,6 +217,23 @@
                             "id": 1,
                             "name": {
                                 "value": "b"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "GameOptionSlotType",
+                    "values": [
+                        {
+                            "id": 0,
+                            "name": {
+                                "value": "Start Game"
+                            }
+                        },
+                        {
+                            "id": 1,
+                            "name": {
+                                "value": "Read Instructions"
                             }
                         }
                     ]

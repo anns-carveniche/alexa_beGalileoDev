@@ -1,7 +1,8 @@
-const https = require("https");
 const { states } = require("../Constants");
-const config = require("../config");
 const { getQuizQuestions } = require("../Utils/HttpUtils");
+const Constants = require("../Constants");
+
+
 const QuizIntentHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
@@ -12,7 +13,7 @@ const QuizIntentHandler = {
   },
   async handle(handlerInput) {
     console.log("Inside QuestionHandler - handle");
-
+    var speakOutput = "";
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const response = handlerInput.responseBuilder;
      var studentId = sessionAttributes.student_id;
@@ -24,8 +25,12 @@ const QuizIntentHandler = {
 
     const dataResponse = await getQuizQuestions(studentId, subConceptId, type);
     if (!dataResponse.status) {
+     speakOutput = "No quiz data found for your account. "+Constants.conclude_message;
+      sessionAttributes.state = states.CONCLUDE;
+      sessionAttributes.repeat_message = speakOutput;
       return response
-        .speak("No quiz data found for your account")
+      .withShouldEndSession(false)
+        .speak(speakOutput)
         .getResponse();
     }
     var questions = dataResponse.question_data;
@@ -52,7 +57,7 @@ const QuizIntentHandler = {
     cardText += "A. "+choices[0].choices+"\r\n";
     cardText += "B. " + choices[1].choices + "\r\n";
 
-    const speakOutput =
+     speakOutput =
       'Starting Quiz<break time="0.3s" /> You can say Option A or Option B .Here is the Question : ' +
       current_question +
       getOptionSpeechTest("A") +
@@ -66,7 +71,8 @@ const QuizIntentHandler = {
       choices[0].choices +
       getOptionSpeechTest("B") +
       choices[1].choices;
-
+    sessionAttributes.help_message = Constants.option_help_message;
+      sessionAttributes.repeat_message = speakOutput;
     return response
       .speak(speakOutput)
       .reprompt(rePromptQuestion)

@@ -1,7 +1,4 @@
-const https = require("https");
-const config = require("../config");
-const Constants = require("../Constants");
-const { sendNotification } = require("../Utils/UtilMethods");
+const { states,conclude_message } = require("../Constants");
 const { getActions } = require("../Utils/HttpUtils");
 const { createNotification } = require("../Utils/HttpUtils");
 
@@ -46,11 +43,15 @@ async function challengeQuiz(handlerInput) {
       quizQuestion +
       " we will notify you once " +
       studentName +
-      " finish the quiz challenge <break time='100ms'/> Thank you";
+      " finish the quiz challenge ";
+      speechText += conclude_message;
+      sessionAttributes.state = states.CONCLUDE;
      var cardHeader = "Quiz Challenge"
      var cardContent = quizQuestion
      createNotification(studentId, 2, subConceptId);
+     sessionAttributes.repeat_message = speechText;
     return handlerInput.responseBuilder
+      .withShouldEndSession(false)
       .speak(speechText)
       .withSimpleCard(cardHeader,cardContent)
       .getResponse();
@@ -58,22 +59,28 @@ async function challengeQuiz(handlerInput) {
 
 
  function sendingHIFI(handlerInput) {
+   var speakOutput = "";
    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
    var studentId = sessionAttributes.student_id;
    var subConceptId = sessionAttributes.sub_concept_id;
    var studentName = sessionAttributes.studentName;
-     var message = {
-       //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-       to:"d2fDf2Fbq3U:APA91bEmZTG-JvQ3EpbjUsilKoPnOhod4TLqyNlkwLlWyEUxaQJyDACZR-68rO5YHIkeIL7EZ-iuCVxlJ6rZM5bqnvoE3Jon3uspXewiw6wlAS2D4hxxZprSBsMD-34iBDCkUVLpTCJV",
+    //  var message = {
+    //    //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+    //    to:"d2fDf2Fbq3U:APA91bEmZTG-JvQ3EpbjUsilKoPnOhod4TLqyNlkwLlWyEUxaQJyDACZR-68rO5YHIkeIL7EZ-iuCVxlJ6rZM5bqnvoE3Jon3uspXewiw6wlAS2D4hxxZprSBsMD-34iBDCkUVLpTCJV",
 
-       notification: {
-         title: "HI-FIVE",
-         body: "you got a HI-Five from your parent"
-       }
-     };
+    //    notification: {
+    //      title: "HI-FIVE",
+    //      body: "you got a HI-Five from your parent"
+    //    }
+    //  };
+     speakOutput =
+       " Sending HI-FI to " + studentName + ' <break time="1s"/> Done';
+       speakOutput += " "+conclude_message;
     createNotification(studentId, 1, subConceptId);
+    sessionAttributes.repeat_message = speakOutput;
     return handlerInput.responseBuilder
-      .speak(" Sending HI-FI to " + studentName+' <break time="1s"/> Done')
+      .speak(speakOutput)
+      .withShouldEndSession(false)
       .getResponse();
 };
 
@@ -103,7 +110,7 @@ async function highlights(handlerInput) {
         cardText += i+1+' '+highlights[i]+'\r\n';
     }
     speakOutput += '<break time="0.5s" /> Thats it. Do you want a play a quiz or play a video ';
-
+    sessionAttributes.repeat_message = speakOutput;
     return handlerInput.responseBuilder
       .speak(speakOutput)
       .withShouldEndSession(false)

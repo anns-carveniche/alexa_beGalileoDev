@@ -12,9 +12,10 @@ const GetKidInfoIntentHandler = {
   },
   async handle(handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-
-    //const response = await httpGet();
-    const response = await getUserInfo(""); 
+    const accessToken =
+      handlerInput.requestEnvelope.context.System.user.accessToken;
+      //const response = await httpGet(); 
+    const response = await getUserInfo(accessToken); 
     console.log(response);
     let speechText = "";
     let cardText = "";
@@ -60,7 +61,9 @@ const GetKidInfoIntentHandler = {
     } else {
       speechText = Constants.email_not_registered;
     }
-
+    sessionAttributes.help_message =
+      "you can say <break time='200ms'/> challenge a quiz <break time='100ms'/> or <break time='100ms'/> send a HI-FIVE";
+    sessionAttributes.repeat_message = speechText; 
     return handlerInput.responseBuilder
       .speak(speechText)
       .withShouldEndSession(false)
